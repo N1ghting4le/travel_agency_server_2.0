@@ -23,13 +23,18 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Value("${admin.email}")
     private String adminEmail;
-    @Value("${admin.password}")
+    private PasswordEncoder passwordEncoder;
     private String adminPassword;
+
+    public UserService(
+            @Autowired PasswordEncoder passwordEncoder, @Value("${admin.password}") String adminPassword) {
+        this.passwordEncoder = passwordEncoder;
+        this.adminPassword = passwordEncoder.encode(adminPassword);
+    }
+
     public boolean isAdminEmail(Object email) {
         return Objects.equals(email, adminEmail);
     }
