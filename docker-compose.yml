@@ -17,6 +17,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - kursach-network
 
   kursach-server:
     image: spring-boot:latest
@@ -34,7 +36,13 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - kursach-network
 
 volumes:
   postgres_data:
   uploads:
+
+networks:
+  kursach-network:
+    external: true
