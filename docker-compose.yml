@@ -21,7 +21,7 @@ services:
       - kursach-network
 
   kursach-server:
-    image: spring-boot:latest
+    image: n1ghting4le/kursach-server:latest
     container_name: server
     build:
       context: .
