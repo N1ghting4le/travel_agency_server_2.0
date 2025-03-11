@@ -4,7 +4,7 @@ import com.example.kursach_server.dto.user.CreateUserDTO;
 import com.example.kursach_server.requests.SignInRequest;
 import com.example.kursach_server.dto.user.UserWithTokenDTO;
 import com.example.kursach_server.exceptions.IncorrectPasswordException;
-import com.example.kursach_server.exceptions.conflict.UserAlreadyExistsException;
+import com.example.kursach_server.exceptions.conflict.EntityAlreadyExistsException;
 import com.example.kursach_server.exceptions.notFound.UserNotExistsException;
 import com.example.kursach_server.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ public class UserController {
     private UserService userService;
     @PostMapping("/signUp")
     public UserWithTokenDTO signUp(@Valid @RequestBody CreateUserDTO createUserDTO, HttpServletRequest request)
-            throws UserAlreadyExistsException {
+            throws EntityAlreadyExistsException {
         return userService.createUser(createUserDTO, request);
     }
     @PostMapping("/signIn")

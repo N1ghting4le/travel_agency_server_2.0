@@ -4,7 +4,7 @@ import com.example.kursach_server.dto.user.CreateUserDTO;
 import com.example.kursach_server.requests.SignInRequest;
 import com.example.kursach_server.dto.user.UserWithTokenDTO;
 import com.example.kursach_server.exceptions.IncorrectPasswordException;
-import com.example.kursach_server.exceptions.conflict.UserAlreadyExistsException;
+import com.example.kursach_server.exceptions.conflict.EntityAlreadyExistsException;
 import com.example.kursach_server.exceptions.notFound.UserNotExistsException;
 import com.example.kursach_server.models.User;
 import com.example.kursach_server.repository.UserRepository;
@@ -39,16 +39,16 @@ public class UserService {
         return Objects.equals(email, adminEmail);
     }
     public UserWithTokenDTO createUser(CreateUserDTO createUserDTO, HttpServletRequest request)
-            throws UserAlreadyExistsException {
+            throws EntityAlreadyExistsException {
         String email = createUserDTO.getEmail();
         String role = isAdminEmail(request.getAttribute("email")) ? "EMPL" : "USER";
 
         if (isAdminEmail(email) || userRepository.existsByEmail(email)) {
-            throw new UserAlreadyExistsException("Пользователь с этим адресом эл. почты уже существует");
+            throw new EntityAlreadyExistsException("Пользователь с этим адресом эл. почты уже существует");
         }
 
         if (userRepository.existsByPhoneNumber(createUserDTO.getPhoneNumber())) {
-            throw new UserAlreadyExistsException("Пользователь с этим номером телефона уже существует");
+            throw new EntityAlreadyExistsException("Пользователь с этим номером телефона уже существует");
         }
 
         createUserDTO.setPassword(passwordEncoder.encode(createUserDTO.getPassword()));
@@ -61,19 +61,19 @@ public class UserService {
 
     public UserWithTokenDTO getUser(SignInRequest signInRequest)
             throws UserNotExistsException, IncorrectPasswordException {
-        String email = signInRequest.getEmail();
+        String phoneOrEmail = signInRequest.getPhoneOrEmail();
         String password = signInRequest.getPassword();
 
-        if (isAdminEmail(email)) {
+        if (isAdminEmail(phoneOrEmail)) {
             if (!passwordEncoder.matches(password, adminPassword)) {
                 throw new IncorrectPasswordException("Неверный пароль");
             }
 
-            return new UserWithTokenDTO(jwtTokenUtil.generateToken(email, "ROLE_ADMIN"));
+            return new UserWithTokenDTO(jwtTokenUtil.generateToken(phoneOrEmail, "ROLE_ADMIN"));
         }
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotExistsException("Пользователя с этим адресом эл. почты не существует"));
+        User user = userRepository.findByPhoneNumberOrEmail(phoneOrEmail, phoneOrEmail)
+                .orElseThrow(() -> new UserNotExistsException("Пользователя не существует"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IncorrectPasswordException("Неверный пароль");
@@ -81,7 +81,7 @@ public class UserService {
 
         removeOldBookings(user);
 
-        return new UserWithTokenDTO(jwtTokenUtil.generateToken(email, "ROLE_" + user.getRole()), user);
+        return new UserWithTokenDTO(jwtTokenUtil.generateToken(user.getEmail(), "ROLE_" + user.getRole()), user);
     }
 
     public UserWithTokenDTO authorize(HttpServletRequest request) throws UserNotExistsException {
@@ -92,7 +92,7 @@ public class UserService {
         }
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotExistsException("User with this email doesn't exist"));
+                .orElseThrow(() -> new UserNotExistsException("Пользователя не существует"));
 
         removeOldBookings(user);
 

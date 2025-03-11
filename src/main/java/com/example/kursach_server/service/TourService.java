@@ -45,7 +45,7 @@ public class TourService {
     }
     public void createTour(CreateTourDTO createTourDTO) throws EntityNotFoundException {
         Hotel hotel = hotelRepository.findById(createTourDTO.getHotelId())
-                .orElseThrow(() -> new EntityNotFoundException("Hotel entity with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Отель не найден"));
         Tour tour = new Tour(createTourDTO);
 
         tour.setHotel(hotel);
@@ -54,7 +54,7 @@ public class TourService {
     }
     public UpdateTourDTO updateTour(UpdateTourDTO updateTourDTO) throws EntityNotFoundException {
         Tour tour = tourRepository.findById(updateTourDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Tour entity with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Тур не найден"));
 
         tour.setTourTitle(updateTourDTO.getTourTitle());
         tour.setTourDescr(updateTourDTO.getTourDescr());
@@ -66,7 +66,7 @@ public class TourService {
     }
     public void deleteTour(UUID id) throws EntityNotFoundException {
         Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Tour entity with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Тур не найден"));
 
         if (tour.getBookings().isEmpty()) {
             tourRepository.delete(tour);
@@ -77,7 +77,7 @@ public class TourService {
     }
     public TourDTO getTour(UUID id) throws EntityNotFoundException {
         Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Tour entity with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Тур не найден"));
 
         return new TourDTO(tour);
     }

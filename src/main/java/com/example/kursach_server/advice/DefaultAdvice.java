@@ -2,9 +2,7 @@ package com.example.kursach_server.advice;
 
 import com.example.kursach_server.exceptions.*;
 import com.example.kursach_server.exceptions.conflict.ConflictException;
-import com.example.kursach_server.exceptions.forbidden.EarlyReviewAttemptException;
 import com.example.kursach_server.exceptions.forbidden.ForbiddenException;
-import com.example.kursach_server.exceptions.forbidden.NotSameUserException;
 import com.example.kursach_server.exceptions.notFound.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

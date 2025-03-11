@@ -2,6 +2,7 @@ package com.example.kursach_server.controllers;
 
 import com.example.kursach_server.dto.hotel.CreateHotelDTO;
 import com.example.kursach_server.dto.hotel.HotelPreviewDTO;
+import com.example.kursach_server.exceptions.conflict.EntityAlreadyExistsException;
 import com.example.kursach_server.exceptions.notFound.EntityNotFoundException;
 import com.example.kursach_server.service.HotelService;
 import jakarta.annotation.security.RolesAllowed;
@@ -23,7 +24,7 @@ public class HotelController {
     @PostMapping("/create")
     @RolesAllowed("ADMIN")
     public ResponseEntity<?> addHotel(@Valid @ModelAttribute CreateHotelDTO hotelDTO)
-            throws IOException, EntityNotFoundException {
+            throws IOException, EntityNotFoundException, EntityAlreadyExistsException {
         hotelService.createHotel(hotelDTO);
         return ResponseEntity.noContent().build();
     }

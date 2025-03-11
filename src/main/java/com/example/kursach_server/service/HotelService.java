@@ -2,6 +2,7 @@ package com.example.kursach_server.service;
 
 import com.example.kursach_server.dto.hotel.CreateHotelDTO;
 import com.example.kursach_server.dto.hotel.HotelPreviewDTO;
+import com.example.kursach_server.exceptions.conflict.EntityAlreadyExistsException;
 import com.example.kursach_server.exceptions.notFound.EntityNotFoundException;
 import com.example.kursach_server.models.Hotel;
 import com.example.kursach_server.models.Resort;
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class HotelService {
@@ -29,10 +31,16 @@ public class HotelService {
     private ResortRepository resortRepository;
     @Value("${upload.dir}")
     private String uploadDir;
-    public void createHotel(CreateHotelDTO hotelDTO) throws IOException, EntityNotFoundException {
+    public void createHotel(CreateHotelDTO hotelDTO)
+            throws IOException, EntityNotFoundException, EntityAlreadyExistsException {
         Resort resort = resortRepository
                 .findByResortTitleAndResortCountry(hotelDTO.getResort(), hotelDTO.getCountry())
-                .orElseThrow(() -> new EntityNotFoundException("Resort with given country and title isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Курорт не найден"));
+
+        if (resort.getHotels().stream().anyMatch(hotel -> Objects.equals(hotel.getHotelTitle(), hotelDTO.getTitle()))) {
+            throw new EntityAlreadyExistsException("Отель уже существует");
+        }
+
         String uploadPath = String.format(
                 "%s/%s/%s/%s",
                 uploadDir,

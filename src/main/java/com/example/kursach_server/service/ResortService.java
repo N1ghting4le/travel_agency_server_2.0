@@ -23,7 +23,7 @@ public class ResortService {
                 createResortDTO.getResort(), createResortDTO.getCountry());
 
         if (resortInfo.isPresent()) {
-            throw new ResortAlreadyExistsException("Resort already exists");
+            throw new ResortAlreadyExistsException("Курорт уже существует");
         }
 
         Resort resort = new Resort(createResortDTO);

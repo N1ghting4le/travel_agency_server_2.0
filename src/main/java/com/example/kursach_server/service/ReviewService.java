@@ -35,14 +35,14 @@ public class ReviewService {
         Optional<Review> reviewInfo = reviewRepository
                 .findFirstByUserEmailOrderByReviewDateDesc(email);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User entity with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         if (reviewInfo.isPresent() && new Date().getTime() - reviewInfo.get().getReviewDate().getTime() < 86400000) {
             throw new EarlyReviewAttemptException("Вы можете оставлять не более 1 отзыва в сутки");
         }
 
         Tour tour = tourRepository.findById(createReviewDTO.getTourId())
-                .orElseThrow(() -> new EntityNotFoundException("Tour entity with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Тур не найден"));
         Review review = new Review(createReviewDTO);
 
         review.setUser(user);
@@ -56,7 +56,7 @@ public class ReviewService {
     public ReviewDTO updateReview(UpdateReviewDTO updateReviewDTO, HttpServletRequest request)
             throws EntityNotFoundException, NotSameUserException {
         Review review = reviewRepository.findById(updateReviewDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Review entity with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Отзыв не найден"));
 
         if (!Objects.equals(review.getUser().getEmail(), request.getAttribute("email"))) {
             throw new NotSameUserException("Don't try it!");

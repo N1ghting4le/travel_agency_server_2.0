@@ -33,10 +33,10 @@ public class BookingService {
         Date startDate = createBookingDTO.getStartDate();
         Date endDate = createBookingDTO.getEndDate();
         Tour tour = tourRepository.findById(createBookingDTO.getTourId())
-                .orElseThrow(() -> new EntityNotFoundException("Tour with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Тур не найден"));
 
         if (tour.getDelete() != null) {
-            throw new UnavailableTourException("Этот тур больше не доступен");
+            throw new UnavailableTourException("Тур больше не доступен");
         }
 
         Optional<Booking> booking = bookingRepository
@@ -47,7 +47,7 @@ public class BookingService {
         }
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User with given email isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
         Booking newBooking = new Booking(createBookingDTO);
 
         newBooking.setTour(tour);
@@ -68,9 +68,9 @@ public class BookingService {
     public void takeBooking(UUID bookingId, HttpServletRequest request) throws EntityNotFoundException {
         String email = (String) request.getAttribute("email");
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Booking with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Бронь не найдена"));
         User employee = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Employee with given email isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Сотрудник не найден"));
 
         booking.setEmployee(employee);
         booking.setStatus("Взято сотрудником");
@@ -79,7 +79,7 @@ public class BookingService {
     }
     public void changeStatus(UUID bookingId, String action) throws EntityNotFoundException {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new EntityNotFoundException("Booking with given id isn't found"));
+                .orElseThrow(() -> new EntityNotFoundException("Бронь не найдена"));
 
         booking.setStatus(Objects.equals(action, "approve") ? "Одобрено" : "Отклонено");
         bookingRepository.save(booking);
